@@ -7,19 +7,19 @@
 
 >Description: numpy实现的Bp神经网络，代码风格参照pytorch，实现了全连接层，MSEloss，Sigmoid、Relu激活函数，以及优化器。前端可实时监控训练集loss与测试集loss以及训练测试集拟合曲线
 
-##结果展示
+## 结果展示
 
-###2d可视化训练
+### 2d可视化训练
 可拟合常用一元函数，支持的数学符号：sin，cos，power（乘方），pi 。loss曲线中橙色为验证集loss，蓝色为训练集loss
 
 ![](./readmeDisplay/sinx.gif)
 
-###3d可视化训练
+### 3d可视化训练
 可拟合常用二元曲面，支持的数学符号参考2d部分
 
 ![](./readmeDisplay/3d.gif)
 
-###手写数字识别MNIST训练
+### 手写数字识别MNIST训练
 训练mnist数据集，可设置验证epoch，在每个验证epoch随机抽取十张验证集数据可视化
 
 ![](./readmeDisplay/mnist.gif)
@@ -28,9 +28,9 @@
 
 ![](./readmeDisplay/mnist_result.png)
 
-##代码解析
+## 代码解析
 
-###网络层基类
+### 网络层基类
 构造了所有网络层应实现的前向传播以及后向传播方法，以及获取参数的方法。
 所有的网络层应该继承实现这个基类。
 ``` python
@@ -49,7 +49,7 @@ class BaseNetwork(object):
     def __call__(self,*x):
         return self.forward(*x)
 ```
-###全连接层
+### 全连接层
 继承基类，实现了基类的方法。将该层参数与梯度封装进Variable，供优化器更新。
 ``` python
 class Linear(BaseNetwork):
@@ -78,7 +78,7 @@ class Linear(BaseNetwork):
         grad = np.dot(grad, self.weight.T)
         return grad
 ```
-###激活函数
+### 激活函数
 Sigmoid激活函数存在梯度消失的问题，建议使用Relu激活函数
 ``` python
 class Relu(BaseNetwork):
@@ -112,7 +112,7 @@ class Sigmoid(BaseNetwork):
         grad*=self.output*(1-self.output)
         return grad
 ```
-###损失函数
+### 损失函数
 损失函数实现了MSE(均方差损失)
 ``` python
 class MSE(object):
@@ -132,7 +132,7 @@ class MSE(object):
         ret_grad=np.sum(self.grad,axis=0)
         return np.expand_dims(ret_grad,axis=0)
 ```
-###优化器
+### 优化器
 根据梯度一次性更新所有参数
 ``` python
 class SGD(object):
@@ -152,7 +152,7 @@ class SGD(object):
             parameters.weight-=self.lr*parameters.wgrad
             parameters.bias-=self.lr*parameters.bgrad
 ```
-###定义自己的网络结构
+### 定义自己的网络结构
 仅需在Sequence中叠加自己的网络层即可
 ``` python
 class Mynet(BaseNetwork):
@@ -208,7 +208,7 @@ class Sequence(BaseNetwork):
         return self.parameter
 
 ```
-###训练过程
+### 训练过程
 参考pytorch的写法
 ``` python
 mynet=Mynet()
@@ -226,7 +226,7 @@ for i in tqdm.tqdm(range(1000)):
         mynet.backward()
         optimizer.step()
 ```
-##局限与不足
+## 局限与不足
 本课设由于时间仓促，存在以下局限，供参考者改进：
 
 * 没有实现batch的参数更新
@@ -235,7 +235,7 @@ for i in tqdm.tqdm(range(1000)):
 
 * 只有基础网络结构
 
-##代码结构
+## 代码结构
 ```
 BP
 │
@@ -269,5 +269,5 @@ BP
 
 * 编程环境:`pycharm`
 
-##致谢
+## 致谢
 本课设感谢  [`wlj961012`](https://github.com/wlj961012/AIHomework) 提供的关于plotly.js的基础实现，感谢  [`DIYer22`](https://github.com/DIYer22/Backpropagation) 提供的mnist训练的灵感
