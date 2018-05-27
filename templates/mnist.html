@@ -1,0 +1,318 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <!-- Bootstrap Styles-->
+    <link href="../static/assets/css/bootstrap.css" rel="stylesheet" />
+    <!-- FontAwesome Styles-->
+    <link href="../static/assets/css/font-awesome.css" rel="stylesheet" />
+    <!-- Morris Chart Styles-->
+    <link href="../static/assets/js/morris/morris-0.4.3.min.css" rel="stylesheet" />
+    <!-- Custom Styles-->
+    <link href="../static/assets/css/custom-styles.css" rel="stylesheet" />
+    <!-- Google Fonts-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+    <style>
+        .mnist{
+            width: 28px;
+            height:28px;
+            background: #666666;
+            border: black;
+            display: inline-block;
+            margin:5px;
+        }
+        .text{
+            width: 28px;
+            height:28px;
+            background: #fffff0;
+            border: black;
+            display: inline-block;
+            margin: 5px;
+        }
+        #display{
+            position: absolute;
+            left:500px;
+            width: 420px;
+            height: 200px;
+            background: #ffffff;
+            margin-top: 50px;
+
+        }
+        #mnist_group{
+            width: 420px;
+            height: 50px;
+            background: #ffffff;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default top-navbar" role="navigation">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html"><i class="fa fa-comments"></i> <strong>BP神经网络 </strong></a>
+            </div>
+
+            <ul class="nav navbar-top-links navbar-right">
+
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-tasks fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-tasks"></ul>
+                    <!-- /.dropdown-tasks -->
+                </li>
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-alerts"></ul>
+                    <!-- /.dropdown-alerts -->
+                </li>
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user"></ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+        </nav>
+        <!--/. NAV TOP  -->
+        <nav class="navbar-default navbar-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav" id="main-menu">
+
+                    <li>
+                        <a  href="/train2d"><i class="fa fa-dashboard"></i> 2D Visualize Training</a>
+                    </li>
+                    <li>
+                        <a  href="/train3d"><i class="fa fa-dashboard"></i> 3D Visualize Training</a>
+                    </li>
+                    <li>
+                        <a class="active-menu" href="/trainmnist"><i class="fa fa-dashboard"></i> Mnist Training</a>
+                    </li>
+                </ul>
+
+            </div>
+
+        </nav>
+        <!-- /. NAV SIDE  -->
+        <div id="page-wrapper">
+            <button id="begin" class="btn btn-success btn-large" type="button">开始训练</button>
+            <button class="btn btn-success btn-large" data-toggle="modal" data-target="#myModal" type="button">准备数据</button>
+            <!-- 模态框（Modal） -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title" id="myModalLabel">设置训练选项</h4>
+                        </div>
+                        <div class="form-group">
+                            <label for="lr">学习率</label>
+                            <input type="text" class="form-control" id="lr" placeholder="请输入学习率(建议0.001)">
+                            <label for="momentum">动量</label>
+                            <input type="text" class="form-control" id="momentum" placeholder="请输入动量(建议：0.9)">
+                            <label for=epoches>迭代次数</label>
+                            <input type="text" class="form-control" id="epoches" placeholder="请输入迭代次数">
+                            <label for=valbatches>验证次数</label>
+                            <input type="text" class="form-control" id="valbatches" placeholder="请输入验证轮数">
+                        </div>
+                        <div class="modal-footer">
+                            <button id="prepare" type="button" class="btn btn-primary" data-dismiss="modal">提交</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal -->
+            </div>
+            <div id="loss_curve"></div>
+            <div id="display">
+                <center>随机验证集数据可视化</center>
+                <div id="mnist_group">
+                    <div id="mnist0" class="mnist"></div>
+                    <div id="mnist1" class="mnist"></div>
+                    <div id="mnist2" class="mnist"></div>
+                    <div id="mnist3" class="mnist"></div>
+                    <div id="mnist4" class="mnist"></div>
+                    <div id="mnist5" class="mnist"></div>
+                    <div id="mnist6" class="mnist"></div>
+                    <div id="mnist7" class="mnist"></div>
+                    <div id="mnist8" class="mnist"></div>
+                    <div id="mnist9" class="mnist"></div>
+                </div>
+                <div id="text_group">
+                    <div id="text0" class="text"></div>
+                    <div id="text1" class="text"></div>
+                    <div id="text2" class="text"></div>
+                    <div id="text3" class="text"></div>
+                    <div id="text4" class="text"></div>
+                    <div id="text5" class="text"></div>
+                    <div id="text6" class="text"></div>
+                    <div id="text7" class="text"></div>
+                    <div id="text8" class="text"></div>
+                    <div id="text9" class="text"></div>
+                </div>
+            </div>
+        </div>
+        <!-- /. PAGE WRAPPER  -->
+    </div>
+    <!-- /. WRAPPER  -->
+    <!-- JS Scripts-->
+    <!-- jQuery Js -->
+    <script src="../static/jquery.min.js"></script>
+    <!-- Bootstrap Js -->
+    <script src="../static/assets/js/bootstrap.min.js"></script>
+	 
+    <!-- Metis Menu Js -->
+    <script src="../static/assets/js/jquery.metisMenu.js"></script>
+	
+    <!-- Custom Js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript">
+        var trace1 = {
+            x: [],
+            y: []
+
+        };
+        var trace2 = {
+            x: [],
+            y: []
+        };
+
+        var layout_loss = {
+            xaxis: {
+                range: [ 0, 1000 ]
+            },
+            yaxis: {
+                range: [0 ,1]
+            },
+            title:'Loss'
+        };
+        Plotly.newPlot('loss_curve', [trace1,trace2],layout_loss);
+    </script>
+    <script>
+        $('#prepare').click(function () {
+            $.ajax({
+                url : "/preparemnist",
+                type : 'post',
+                data: JSON.stringify({
+                    func:$('#func').val(),
+                    lr: parseFloat($('#lr').val()),
+                    momentum: parseFloat($('#momentum').val()), // 注意不要在此行增加逗号
+                    epoches:parseInt($('#epoches').val()),
+                    valbatches:parseInt($('#valbatches').val()),
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                async: false,//使用同步的方式,true为异步方式
+                success : function(data){
+                    if(data.code==200){
+                        alert("success");
+                    }
+                },
+                fail:function(){
+                    alert("error");
+                }
+            });
+        });
+
+        $('#begin').click(function () {
+            $.ajax({
+                url : "/beginmnistTrain",
+                type : 'post',
+                async: true,//使用同步的方式,true为异步方式
+                success : function(data){
+                    if(data.code==200){
+                        alert("训练完成！");
+                        window.clearInterval(lossTimeId);
+                        window.clearInterval(predTimeId);
+
+                    }
+                    else {
+                        window.clearInterval(lossTimeId);
+                        window.clearInterval(predTimeId);
+
+                    }
+                },
+                fail:function(){
+                    alert("error");
+                }
+            });
+            lossTimeId=window.setInterval(getloss,1000);
+            predTimeId=window.setInterval(getpred,1000);
+
+        });
+        function getpred() {
+            $.ajax({
+                type:"get",
+                url:"/getmnistpred",
+                datatype:"json",
+                async:true,
+                success:function(data) {
+                    predimg=data.Predimg;
+                    predlabel=data.Predlabel;
+                    for(var i=0;i<10;i++){
+                        putImg("mnist"+i,predimg["img"+i]);
+                        putText("text"+i,predlabel["label"+i])
+                    }
+                }
+            })
+
+        }
+        function getloss() {
+            $.ajax({
+                type:"get",
+                url:"/getmnistLoss",
+                datatype:"json",
+                async:true,
+                success:function(data) {
+                    requestAnimationFrame(updateloss(data.Traindata,data.Valdata));
+                }
+            })
+        }
+
+        function putImg (id, base){  //将base64 img 放到#id中
+            var img = '<img width=28px height=28px src="data:image/png;base64,'+base+'" class="inline"/> ';
+            $('#'+id).html(img);
+        }
+        function putText (id, txt){  //将base64 img 放到#id中
+            $('#'+id).html(txt);
+        }
+        function updateloss (Traindata,Valdata) {
+            Plotly.animate('loss_curve',
+                {
+                    data: [Traindata],//,Valdata]
+                },
+                {
+                    transition: {
+                        duration: 100
+                    },
+                    frame: {
+                        duration: 100,
+                        redraw: false
+                    }
+                }
+            );
+        }
+
+    </script>
+
+</body>
+
+</html>

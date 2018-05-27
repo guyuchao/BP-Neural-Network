@@ -1,0 +1,314 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <!-- Bootstrap Styles-->
+    <link href="../static/assets/css/bootstrap.css" rel="stylesheet" />
+    <!-- FontAwesome Styles-->
+    <link href="../static/assets/css/font-awesome.css" rel="stylesheet" />
+    <!-- Morris Chart Styles-->
+    <link href="../static/assets/js/morris/morris-0.4.3.min.css" rel="stylesheet" />
+    <!-- Custom Styles-->
+    <link href="../static/assets/css/custom-styles.css" rel="stylesheet" />
+    <!-- Google Fonts-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+    <style>
+        #train_surface{
+            width: 500px;
+            height: 500px;
+            display: inline-block;
+        }
+
+        #val_surface{
+            width: 500px;
+            height: 500px;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default top-navbar" role="navigation">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html"><i class="fa fa-comments"></i> <strong>BP神经网络 </strong></a>
+            </div>
+
+            <ul class="nav navbar-top-links navbar-right">
+
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-tasks fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-tasks"></ul>
+                    <!-- /.dropdown-tasks -->
+                </li>
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-alerts"></ul>
+                    <!-- /.dropdown-alerts -->
+                </li>
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user"></ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+        </nav>
+        <!--/. NAV TOP  -->
+        <nav class="navbar-default navbar-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav" id="main-menu">
+
+                    <li>
+                        <a  href="/train2d"><i class="fa fa-dashboard"></i> 2D Visualize Training</a>
+                    </li>
+                    <li>
+                        <a class="active-menu" href="/train3d"><i class="fa fa-dashboard"></i> 3D Visualize Training</a>
+                    </li>
+                    <li>
+                        <a href="/trainmnist"><i class="fa fa-dashboard"></i> Mnist Training</a>
+                    </li>
+                </ul>
+
+            </div>
+
+        </nav>
+        <!-- /. NAV SIDE  -->
+        <div id="page-wrapper">
+            <button id="begin" class="btn btn-success btn-large" type="button">开始训练</button>
+            <button class="btn btn-success btn-large" data-toggle="modal" data-target="#myModal" type="button">准备数据</button>
+            <!-- 模态框（Modal） -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title" id="myModalLabel">设置训练选项</h4>
+                        </div>
+                        <div class="form-group">
+                            <label for="func">拟合函数：</label>
+                            <input type="text" class="form-control" id="func" placeholder="请输入拟合函数(例:sin(x))">
+                            <label for="lr">学习率</label>
+                            <input type="text" class="form-control" id="lr" placeholder="请输入学习率(0.00001-0.001)">
+                            <label for="momentum">动量</label>
+                            <input type="text" class="form-control" id="momentum" placeholder="请输入动量(建议：0.9)">
+                            <label for=epoches>迭代次数</label>
+                            <input type="text" class="form-control" id="epoches" placeholder="请输入迭代次数">
+                        </div>
+                        <div class="modal-footer">
+                            <button id="prepare" type="button" class="btn btn-primary" data-dismiss="modal">提交</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal -->
+            </div>
+            <div id="loss_curve"></div>
+            <center>
+                <div id="train_surface"></div>
+                <div id="val_surface"></div>
+            </center>
+
+        </div>
+        <!-- /. PAGE WRAPPER  -->
+    </div>
+    <!-- /. WRAPPER  -->
+    <!-- JS Scripts-->
+    <!-- jQuery Js -->
+    <script src="../static/jquery.min.js"></script>
+    <!-- Bootstrap Js -->
+    <script src="../static/assets/js/bootstrap.min.js"></script>
+	 
+    <!-- Metis Menu Js -->
+    <script src="../static/assets/js/jquery.metisMenu.js"></script>
+
+	
+    <!-- Custom Js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript">
+        var trace1 = {
+            x: [],
+            y: []
+        };
+        var trace2 = {
+            x: [],
+            y: []
+        };
+        var data = [ trace1,trace2];
+
+        var layout_loss = {
+            xaxis: {
+                range: [ 0, 100 ]
+            },
+            yaxis: {
+                range: [0 ,0.8]
+            },
+            title:'Loss'
+        };
+        var layout_train = {
+            title:'Train Surface'
+        };
+        var layout_val={
+            title:'Val Surface'
+        }
+        Plotly.newPlot('loss_curve', data, layout_loss);
+
+        z1 = [1];
+        z2=[1];
+        var data_z1 = {z: z1, type: 'scatter3d'};
+
+        Plotly.newPlot('train_surface', [data_z1],layout_train);
+        var data_z2 = {z: z2, type: 'scatter3d'};
+        Plotly.newPlot('val_surface', [data_z2],layout_val);
+
+    </script>
+    <script>
+        $('#prepare').click(function () {
+            $.ajax({
+                url : "/prepare3dData",
+                type : 'post',
+                data: JSON.stringify({
+                    func:$('#func').val(),
+                    lr: parseFloat($('#lr').val()),
+                    momentum: parseFloat($('#momentum').val()), // 注意不要在此行增加逗号
+                    epoches:parseInt($('#epoches').val())
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                async: false,//使用同步的方式,true为异步方式
+                success : function(data){
+
+                    Plotly.plot('train_surface',
+                        {
+                        data: [data.TrainData]
+                        }
+                    );
+                    Plotly.plot('val_surface',
+                        {
+                        data: [data.ValData]
+                        }
+                    );
+                },
+                fail:function(){
+                    alert("error");
+                }
+            });
+        });
+
+        $('#begin').click(function () {
+            $.ajax({
+                url : "/begin3dTrain",
+                type : 'post',
+                async: true,//使用同步的方式,true为异步方式
+                success : function(data){
+                    if(data.code==200){
+                        alert("训练完成！");
+                        window.clearInterval(lossTimeId);
+                        window.clearInterval(trainCurveTimeId);
+
+                    }
+                    else {
+                        window.clearInterval(lossTimeId);
+                        window.clearInterval(trainCurveTimeId);
+                    }
+                },
+                fail:function(){
+                    alert("error");
+                }
+            });
+            lossTimeId=window.setInterval(getloss,1000);
+            trainCurveTimeId=window.setInterval(gettrainsurface,1000);
+
+        });
+        function getloss() {
+            $.ajax({
+                type:"get",
+                url:"/get3dLoss",
+                datatype:"json",
+                async:true,
+                success:function(data) {
+                    requestAnimationFrame(updateloss(data.TrainData,data.ValData));
+                }
+            })
+        }
+        function updateloss (TrainData,ValData) {
+            Plotly.animate('loss_curve',
+                {
+                    data: [TrainData,ValData]
+                },
+                {
+                    transition: {
+                        duration: 100
+                    },
+                    frame: {
+                        duration: 100,
+                        redraw: false
+                    }
+                }
+            );
+        }
+
+        function updatetrainsurface (TrainData,ValData) {
+            Plotly.animate('train_surface',
+                {
+                    data: [TrainData]
+                },
+                {
+                    transition: {
+                        duration: 100
+                    },
+                    frame: {
+                        duration: 100,
+                        redraw: false
+                    }
+                }
+            );
+            Plotly.animate('val_surface',
+                {
+                    data: [ValData]
+                },
+                {
+                    transition: {
+                        duration: 100
+                    },
+                    frame: {
+                        duration: 100,
+                        redraw: false
+                    }
+                }
+            );
+        }
+        function gettrainsurface() {
+            $.ajax({
+                type:"get",
+                url:"/get3dTrainsurface",
+                datatype:"json",
+                async:true,
+                success:function(data) {
+                    requestAnimationFrame(updatetrainsurface(data.Traindata,data.Valdata));
+                }
+            })
+        }
+    </script>
+
+</body>
+
+</html>
