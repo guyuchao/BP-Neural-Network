@@ -45,6 +45,7 @@ class BaseNetwork(object):
 
     def backward(self,grad):
         pass
+
     def __call__(self,*x):
         return self.forward(*x)
 
@@ -107,7 +108,6 @@ class Linear(BaseNetwork):
     def backward(self,grad):
         self.bgrad=grad
         self.wgrad += np.dot(self.input.T, grad)
-        # self.bgrad+=grad=
         grad = np.dot(grad, self.weight.T)
         return grad
 
@@ -171,7 +171,7 @@ class SGD(object):
 
     def step(self):
         for parameters in self.parameters:
-            parameters.v_weight=parameters.v_weight*self.momentum-self.lr*parameters.wgrad
+            #parameters.v_weight=parameters.v_weight*self.momentum-self.lr*parameters.wgrad
             parameters.weight-=self.lr*parameters.wgrad
             parameters.bias-=self.lr*parameters.bgrad
 
